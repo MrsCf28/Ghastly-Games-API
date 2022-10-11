@@ -133,7 +133,7 @@ describe(`PATCH /api`, () => {
                         'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
                     review_body: 'Fiddly fun for all the family',
                     category: 'dexterity',
-                    created_at: "2021-01-18T10:01:41.251Z",
+                    created_at: '2021-01-18T10:01:41.251Z',
                     votes: 12,
                 };
                 return request(app)
@@ -156,7 +156,7 @@ describe(`PATCH /api`, () => {
                         'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
                     review_body: 'Fiddly fun for all the family',
                     category: 'dexterity',
-                    created_at: "2021-01-18T10:01:41.251Z",
+                    created_at: '2021-01-18T10:01:41.251Z',
                     votes: 2,
                 };
                 return request(app)
@@ -185,7 +185,9 @@ describe(`PATCH /api`, () => {
                     .send(updateVote)
                     .expect(400)
                     .then(({ body }) => {
-                        expect(body.msg).toBe('bad request - review_id is not a number');
+                        expect(body.msg).toBe(
+                            'bad request - review_id is not a number'
+                        );
                     });
             });
             test('ERROR invalid inc_votes returns 400 bad request', () => {
@@ -195,7 +197,9 @@ describe(`PATCH /api`, () => {
                     .send(updateVote)
                     .expect(400)
                     .then(({ body }) => {
-                        expect(body.msg).toBe('bad request - inc_votes is not a number');
+                        expect(body.msg).toBe(
+                            'bad request - inc_votes is not a number'
+                        );
                     });
             });
             test('ERROR votes should never be negative returns 400 bad request', () => {
@@ -205,7 +209,9 @@ describe(`PATCH /api`, () => {
                     .send(updateVote)
                     .expect(400)
                     .then(({ body }) => {
-                        expect(body.msg).toBe('bad request - total votes cannot be negative');
+                        expect(body.msg).toBe(
+                            'bad request - total votes cannot be negative'
+                        );
                     });
             });
             test('ERROR inc_votes has not been sent', () => {
@@ -215,10 +221,11 @@ describe(`PATCH /api`, () => {
                     .send(updateVote)
                     .expect(400)
                     .then(({ body }) => {
-                        expect(body.msg).toBe('bad request - inc_votes has not been sent');
+                        expect(body.msg).toBe(
+                            'bad request - inc_votes has not been sent'
+                        );
                     });
             });
-        })
-        
+        });
     });
 });
