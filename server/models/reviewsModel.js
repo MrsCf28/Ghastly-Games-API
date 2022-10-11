@@ -9,8 +9,11 @@ exports.fetchReview = (id) => {
     }
     return db
         .query(`
-        SELECT * FROM reviews
-        WHERE review_id=$1;`, [id])
+        SELECT reviews.*, COUNT(comments.comment_id) AS comment_count
+        FROM reviews
+        JOIN comments ON comments.review_id=reviews.review_id
+        WHERE reviews.review_id=$1
+        GROUP BY reviews.review_id;`, [id])
         .then(({ rows: review }) => {
             if (review.length === 0) {
                 return Promise.reject({
