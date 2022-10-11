@@ -44,7 +44,7 @@ describe(`GET /api`, () => {
                 .then(({ body }) => {
                     expect(body.msg).toBe('Route not found');
                 });
-        })
+        });
         test('a missing endpoint is caught with a status 404', () => {
             return request(app)
                 .get('/api/')
@@ -52,7 +52,7 @@ describe(`GET /api`, () => {
                 .then(({ body }) => {
                     expect(body.msg).toBe('Route not found');
                 });
-        })
+        });
     });
     describe(`/reviews`, () => {
         describe(`/:review_id`, () => {
@@ -76,25 +76,27 @@ describe(`GET /api`, () => {
                             comment_count: "3",
                     })
                 });
-            })
+            });
             test('ERROR non-existent valid id returns 404 not found', () => {
                 return request(app)
                     .get('/api/reviews/999999')
                     .expect(404)
                     .then(({ body }) => {
-                        expect(body.msg).toBe("review_id not found")
-                    })
-            })
+                        expect(body.msg).toBe('review_id not found');
+                    });
+            });
             test('ERROR invalid id returns 400 bad request', () => {
                 return request(app)
                     .get('/api/reviews/epidemic')
                     .expect(400)
                     .then(({ body }) => {
-                        expect(body.msg).toBe("bad request - review_id is not a number")
-                    })
-            })
-        })
-    })
+                        expect(body.msg).toBe(
+                            'bad request - review_id is not a number'
+                        );
+                    });
+            });
+        });
+    });
     describe(`/users`, () => {
         test('status 200, returns all users', () => {
             return request(app)
@@ -114,6 +116,117 @@ describe(`GET /api`, () => {
                         );
                     });
                 });
+        });
+    });
+});
+
+describe(`PATCH /api`, () => {
+    describe(`/reviews`, () => {
+        describe(`/review_id`, () => {
+            test(`/review_id for positive increase`, () => {
+                const updateVote = { inc_votes: 7 };
+                const updatedReview = {
+                    review_id: 2,
+                    title: 'Jenga',
+                    designer: 'Leslie Scott',
+                    owner: 'philippaclaire9',
+                    review_img_url:
+                        'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                    review_body: 'Fiddly fun for all the family',
+                    category: 'dexterity',
+                    created_at: '2021-01-18T10:01:41.251Z',
+                    votes: 12,
+                };
+                return request(app)
+                    .patch(`/api/reviews/2`)
+                    .send(updateVote)
+                    .expect(202)
+                    .then(({ body }) => {
+                        const { review } = body;
+                        expect(review).toEqual(updatedReview);
+                    });
+            });
+            test(`/review_id for decrease`, () => {
+                const updateVote = { inc_votes: -3 };
+                const updatedReview = {
+                    review_id: 2,
+                    title: 'Jenga',
+                    designer: 'Leslie Scott',
+                    owner: 'philippaclaire9',
+                    review_img_url:
+                        'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                    review_body: 'Fiddly fun for all the family',
+                    category: 'dexterity',
+                    created_at: '2021-01-18T10:01:41.251Z',
+                    votes: 2,
+                };
+                return request(app)
+                    .patch(`/api/reviews/2`)
+                    .send(updateVote)
+                    .expect(202)
+                    .then(({ body }) => {
+                        const { review } = body;
+                        expect(review).toEqual(updatedReview);
+                    });
+            });
+            test('ERROR non-existent review id returns 404 not found', () => {
+                const updateVote = { inc_votes: 7 };
+                return request(app)
+                    .patch('/api/reviews/999999')
+                    .send(updateVote)
+                    .expect(404)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe('review_id not found');
+                    });
+            });
+            test('ERROR invalid review id returns 400 bad request', () => {
+                const updateVote = { inc_votes: 7 };
+                return request(app)
+                    .patch('/api/reviews/nine')
+                    .send(updateVote)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe(
+                            'bad request - review_id is not a number'
+                        );
+                    });
+            });
+            test('ERROR invalid inc_votes returns 400 bad request', () => {
+                const updateVote = { inc_votes: 'seven' };
+                return request(app)
+                    .patch('/api/reviews/2')
+                    .send(updateVote)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe(
+                            'bad request - inc_votes is not a number'
+                        );
+                    });
+            });
+            test('ERROR votes should never be negative returns 400 bad request', () => {
+                const updateVote = { inc_votes: -99 };
+                return request(app)
+                    .patch('/api/reviews/2')
+                    .send(updateVote)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe(
+                            'bad request - total votes cannot be negative'
+                        );
+                    });
+            });
+            test('ERROR inc_votes has not been sent', () => {
+                const updateVote = {};
+                return request(app)
+                    .patch('/api/reviews/2')
+                    .send(updateVote)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe(
+                            'bad request - inc_votes has not been sent'
+                        );
+                    });
+            });
         });
     });
 });
