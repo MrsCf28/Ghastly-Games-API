@@ -1,23 +1,55 @@
 const db = require('../../db/connection');
+const {
+    badRequestId,
+    idNotFound,
+    badRequestNeg,
+    badRequestQuery,
+} = require('../error-handling');
 
-exports.fetchReview = (id) => {
+exports.fetchReview = id => {
     if (isNaN(id)) {
-        return Promise.reject({
-            status: 400,
-            msg: 'bad request - review_id is not a number',
-        });
+        return badRequestId('review_id');
     }
     return db
-        .query(`
+        .query(
+            `
         SELECT * FROM reviews
-        WHERE review_id=$1;`, [id])
+        WHERE review_id=$1;`,
+            [id]
+        )
         .then(({ rows: review }) => {
             if (review.length === 0) {
-                return Promise.reject({
-                    status: 404,
-                    msg: "review_id not found",
-                })
+                return idNotFound('review_id');
             }
-            return review[0]
-        })
+            return review[0];
+        });
+};
+
+exports.updateReview = (id, newVotes) => {
+    if (newVotes === undefined) {
+        return badRequestQuery('inc_votes');
+    }
+    if (isNaN(id)) {
+        return badRequestId('review_id');
+    }
+    if (isNaN(newVotes)) {
+        return badRequestId('inc_votes');
+    }
+    return db
+        .query(
+            `UPDATE reviews
+            SET votes = votes + $1
+            WHERE review_id = $2
+            RETURNING *;`,
+            [newVotes, id]
+        )
+        .then(({ rows: review }) => {
+            if (review.length === 0) {
+                return idNotFound('review_id');
+            } else if (review[0].votes < 0) {
+                return badRequestNeg('total votes');
+            } else {
+                return review[0];
+            }
+        });
 };
