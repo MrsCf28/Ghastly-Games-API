@@ -16,3 +16,19 @@ exports.fetchComments = id => {
             return comments;
         });
 };
+
+exports.addComment = (id, username, body) => {
+    const date = new Date(Date.now());
+    return db
+        .query(
+            `INSERT INTO comments
+            (body, votes, author, review_id, created_at)
+            VALUES
+            ($1, 0, $2, $3, $4)
+            RETURNING *`,
+            [body, username, id, date]
+        )
+        .then(({ rows: comment }) => {
+            return comment[0];
+        });
+};

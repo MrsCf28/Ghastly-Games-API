@@ -265,6 +265,35 @@ describe(`GET /api`, () => {
     });
 });
 
+describe(`POST /api`, () => {
+    describe(`/reviews/`, () => {
+        describe(`/review_id/comments`, () => {
+            test('POST a comment, status 201, returns posted comment', () => {
+                const newComment = {
+                    username: 'philippaclaire9',
+                    body: 'What werewolf?!?',
+                };
+                const addedComment = {
+                    comment_id: 7,
+                    body: 'What werewolf?!?',
+                    votes: 0,
+                    author: 'philippaclaire9',
+                    review_id: 3,
+                    created_at: "create a Date here", ///to be done
+                };
+                return request(app)
+                    .post(`/api/reviews/3/comments`)
+                    .send(newComment)
+                    .expect(201)
+                    .then(({ body }) => {
+                        const { comment } = body;
+                        expect(comment).toEqual(addedComment);
+                    });
+            });
+        });
+    });
+});
+
 describe(`PATCH /api`, () => {
     describe(`/reviews`, () => {
         describe(`/review_id`, () => {
