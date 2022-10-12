@@ -37,7 +37,7 @@ describe(`GET /api`, () => {
                     });
                 });
         });
-        test('a misspelt endpoint is caught with a status 404', () => {
+        test('ERROR a misspelt endpoint is caught with a status 404', () => {
             return request(app)
                 .get('/api/categorys')
                 .expect(404)
@@ -45,7 +45,7 @@ describe(`GET /api`, () => {
                     expect(body.msg).toBe('Route not found');
                 });
         });
-        test('a missing endpoint is caught with a status 404', () => {
+        test('ERROR a missing endpoint is caught with a status 404', () => {
             return request(app)
                 .get('/api/')
                 .expect(404)
@@ -55,6 +55,88 @@ describe(`GET /api`, () => {
         });
     });
     describe(`/reviews`, () => {
+        describe(`/`, () => {
+            test('returns all reviews', () => {
+                return request(app)
+                    .get('/api/reviews')
+                    .expect(200)
+                    .then(({ body }) => {
+                        const { reviews } = body;
+                        expect(reviews).toBeInstanceOf(Array);
+                        expect(reviews.length).toBe(13);
+                        reviews.forEach(review => {
+                            expect(review).toEqual(
+                                expect.objectContaining({
+                                    review_id: expect.any(Number),
+                                    owner: expect.any(String),
+                                    title: expect.any(String),
+                                    category: expect.any(String),
+                                    review_img_url:
+                                        expect.any(String),
+                                    created_at: expect.any(String),
+                                    votes: expect.any(Number),
+                                    designer: expect.any(String),
+                                    comment_count: expect.any(Number),
+                                })
+                            );
+                        });
+                    });
+            });
+            test('returns all reviews sorted by date in descending order', () => {
+                return request(app)
+                    .get('/api/reviews')
+                    .expect(200)
+                    .then(({ body }) => {
+                        const { reviews } = body;
+                        expect(reviews).toBeSortedBy('created_at', {
+                            descending: true,
+                        });
+                    });
+            });
+            describe(`filters by category query`, () => {
+                test('filters by category=e.g.social deduction', () => {
+                    return request(app)
+                        .get(`/api/reviews?category=social+deduction`)
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { reviews } = body;
+                            expect(reviews).toBeSortedBy(
+                                'created_at',
+                                {
+                                    descending: true,
+                                }
+                            );
+                            expect(reviews.length).toBe(11);
+                            reviews.forEach(review => {
+                                expect(review).toEqual(
+                                    expect.objectContaining({
+                                        category: 'social deduction',
+                                    })
+                                );
+                            });
+                        });
+                });
+                test('returns empty if none found in an existing category', () => {
+                    return request(app)
+                        .get(`/api/reviews?category=children's+games`)
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { reviews } = body;
+                            expect(reviews).toEqual([]);
+                        });
+                });
+                test('ERROR 404 category not found', () => {
+                    return request(app)
+                        .get('/api/reviews?category=myThings')
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe(
+                                'category not found'
+                            );
+                        });
+                });
+            });
+        });
         describe(`/:review_id`, () => {
             test('status 200, returns a review object including comment count', () => {
                 return request(app)

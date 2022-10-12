@@ -16,8 +16,8 @@ exports.badRequestQuery = query =>
         msg: `bad request - ${query} has not been sent`,
     });
 
-exports.idNotFound = id_name =>
+exports.itemNotFound = item_name =>
     Promise.reject({
         status: 404,
-        msg: `${id_name} not found`,
+        msg: `${item_name} not found`,
     });

@@ -1,7 +1,27 @@
 const {
+    fetchCategoryIfExists,
+} = require('../models/categoriesModel');
+const {
     fetchReview,
     updateReview,
+    fetchReviews,
 } = require('../models/reviewsModel');
+
+exports.getReviews = (request, response, next) => {
+    const { category } = request.query;
+
+    const promises = [fetchReviews(category)];
+
+    if (category) {
+        promises.push(fetchCategoryIfExists(category));
+    }
+
+    Promise.all(promises)
+        .then(reviews => {
+            response.status(200).send({ reviews: reviews[0] });
+        })
+        .catch(err => next(err));
+};
 
 exports.getReview = (request, response, next) => {
     const { review_id } = request.params;

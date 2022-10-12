@@ -3,8 +3,14 @@ const {
     getCategories,
 } = require('./controllers/categoriesController');
 const {
+    handleEndPointErrors,
+    handleCustomErrors,
+    handleInternalErrors,
+} = require('./controllers/errorsController');
+const {
     getReview,
     patchReview,
+    getReviews,
 } = require('./controllers/reviewsController');
 const { getComments } = require('./controllers/commentsController');
 const { getUsers } = require('./controllers/usersControllers');
@@ -12,7 +18,9 @@ const { getUsers } = require('./controllers/usersControllers');
 const app = express();
 app.use(express.json());
 
+// api requests
 app.get(`/api/categories`, getCategories);
+app.get(`/api/reviews`, getReviews);
 app.get(`/api/reviews/:review_id`, getReview);
 app.get(`/api/reviews/:review_id/comments`, getComments);
 app.get(`/api/users`, getUsers);
@@ -20,21 +28,8 @@ app.get(`/api/users`, getUsers);
 app.patch(`/api/reviews/:review_id`, patchReview);
 
 // error handling
-app.all('/api/*', (req, res) => {
-    res.status(404).send({ msg: 'Route not found' });
-});
-
-app.use((err, req, res, next) => {
-    if (err.status && err.msg) {
-        res.status(err.status).send({ msg: err.msg });
-    } else {
-        next(err);
-    }
-});
-
-app.use((err, req, res, next) => {
-    console.log(err);
-    res.sendStatus(500);
-});
+app.use(handleEndPointErrors);
+app.use(handleCustomErrors);
+app.use(handleInternalErrors);
 
 module.exports = app;
