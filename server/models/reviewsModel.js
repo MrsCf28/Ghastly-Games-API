@@ -90,7 +90,7 @@ exports.fetchReviewIdIfExists = id => {
         )
         .then(({ rows: review_id }) => {
             if (review_id.length === 0) {
-                return idNotFound('review_id');
+                return itemNotFound('review_id');
             } else {
                 return review_id[0];
             }
