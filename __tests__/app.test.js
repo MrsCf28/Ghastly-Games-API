@@ -58,24 +58,25 @@ describe(`GET /api`, () => {
         describe(`/:review_id`, () => {
             test('status 200, returns a review object including comment count', () => {
                 return request(app)
-                .get('/api/reviews/2')
-                .expect(200)
-                .then(({ body }) => {
-                    const { review } = body;
-                    expect(review).toEqual({
-                        review_id: 2,
-                        title: 'Jenga',
+                    .get('/api/reviews/2')
+                    .expect(200)
+                    .then(({ body }) => {
+                        const { review } = body;
+                        expect(review).toEqual({
+                            review_id: 2,
+                            title: 'Jenga',
                             designer: 'Leslie Scott',
                             owner: 'philippaclaire9',
                             review_img_url:
-                              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-                            review_body: 'Fiddly fun for all the family',
+                                'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                            review_body:
+                                'Fiddly fun for all the family',
                             category: 'dexterity',
-                            created_at: "2021-01-18T10:01:41.251Z",
+                            created_at: '2021-01-18T10:01:41.251Z',
                             votes: 5,
-                            comment_count: "3",
-                    })
-                });
+                            comment_count: '3',
+                        });
+                    });
             });
             test('ERROR non-existent valid id returns 404 not found', () => {
                 return request(app)
@@ -94,6 +95,68 @@ describe(`GET /api`, () => {
                             'bad request - review_id is not a number'
                         );
                     });
+            });
+            describe(`fetch comments by review_id`, () => {
+                test('status 200, returns comments by review_id, with the most recent first', () => {
+                    return request(app)
+                        .get('/api/reviews/2/comments')
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { comments } = body;
+                            expect(comments).toBeInstanceOf(Array);
+                            expect(comments.length).toBe(3);
+                            comments.forEach(comment => {
+                                expect(comment).toEqual(
+                                    expect.objectContaining({
+                                        comment_id:
+                                            expect.any(Number),
+                                        body: expect.any(String),
+                                        votes: expect.any(Number),
+                                        author: expect.any(String),
+                                        review_id: 2,
+                                        created_at:
+                                            expect.any(String),
+                                    })
+                                );
+                            });
+                            expect(comments).toBeSortedBy(
+                                'created_at',
+                                {
+                                    descending: true,
+                                }
+                            );
+                        });
+                });
+                test('status 200, returns empty body for review with no comments', () => {
+                    return request(app)
+                        .get('/api/reviews/1/comments')
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { comments } = body;
+                            expect(comments).toBeInstanceOf(Array);
+                            expect(comments.length).toBe(0);
+                        });
+                });
+                test('ERROR non-existent review_id returns 404 not found', () => {
+                    return request(app)
+                        .get('/api/reviews/999999/comments')
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe(
+                                'review_id not found'
+                            );
+                        });
+                });
+                test('ERROR invalid review_id returns 400 bad request', () => {
+                    return request(app)
+                        .get('/api/reviews/epidemic/comments')
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe(
+                                'bad request - review_id is not a number'
+                            );
+                        });
+                });
             });
         });
     });

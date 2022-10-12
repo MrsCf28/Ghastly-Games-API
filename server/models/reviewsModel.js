@@ -11,12 +11,15 @@ exports.fetchReview = id => {
         return badRequestId('review_id');
     }
     return db
-        .query(`
+        .query(
+            `
         SELECT reviews.*, COUNT(comments.comment_id) AS comment_count
         FROM reviews
         JOIN comments ON comments.review_id=reviews.review_id
         WHERE reviews.review_id=$1
-        GROUP BY reviews.review_id;`, [id])
+        GROUP BY reviews.review_id;`,
+            [id]
+        )
         .then(({ rows: review }) => {
             if (review.length === 0) {
                 return idNotFound('review_id');
@@ -50,6 +53,24 @@ exports.updateReview = (id, newVotes) => {
                 return badRequestNeg('total votes');
             } else {
                 return review[0];
+            }
+        });
+};
+
+exports.fetchReviewIdIfExists = id => {
+    return db
+        .query(
+            `
+            SELECT review_id
+            FROM reviews
+            WHERE review_id = $1`,
+            [id]
+        )
+        .then(({ rows: review_id }) => {
+            if (review_id.length === 0) {
+                return idNotFound('review_id');
+            } else {
+                return review_id[0];
             }
         });
 };
