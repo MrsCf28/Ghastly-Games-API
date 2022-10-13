@@ -30,7 +30,7 @@ exports.postComment = (request, response, next) => {
     const { username, body } = request.body;
 
     if (review_id) {
-        return fetchReviewIdIfExists(review_id)
+        fetchReviewIdIfExists(review_id)
             .then(() => {
                 return addComment(review_id, username, body);
             })

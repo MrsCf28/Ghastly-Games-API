@@ -5,18 +5,25 @@ const {
     fetchReview,
     updateReview,
     fetchReviews,
+    checkReviewSortByIsValid,
 } = require('../models/reviewsModel');
 
 exports.getReviews = (request, response, next) => {
-    const { category } = request.query;
+    const { category, sort_by, order } = request.query;
+    let sortedBy = sort_by || 'created_at';
 
-    const promises = [fetchReviews(category)];
+    checkReviewSortByIsValid(sortedBy)
+        .then(() => {
+            const promises = [
+                fetchReviews(category, sortedBy, order),
+            ];
 
-    if (category) {
-        promises.push(fetchCategoryIfExists(category));
-    }
+            if (category) {
+                promises.push(fetchCategoryIfExists(category));
+            }
 
-    Promise.all(promises)
+            return Promise.all(promises);
+        })
         .then(reviews => {
             response.status(200).send({ reviews: reviews[0] });
         })
