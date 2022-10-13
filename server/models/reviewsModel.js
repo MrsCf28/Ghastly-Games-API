@@ -4,23 +4,33 @@ const {
     itemNotFound,
     badRequestNeg,
     badRequestQuery,
+    invalidRequestParameter,
 } = require('../error-handling');
 
-exports.fetchReviews = category => {
+exports.fetchReviews = (category, sortedBy, order) => {
+    if (order) {
+        if (!['ASC', 'DESC', 'asc', 'desc'].includes(order)) {
+            return invalidRequestParameter(order);
+        }
+    }
     let baseParam = [];
-    let baseQuery = `SELECT 
-                        reviews.*,
-                        CAST(COUNT(comments.comment_id) as INTEGER) AS comment_count
+    let baseQuery = `SELECT reviews.*,
+                    CAST(COUNT(comments.comment_id) as INTEGER) AS comment_count
                     FROM reviews
                     LEFT JOIN comments ON comments.review_id = reviews.review_id
                     `;
+
+    let orderBy = order || 'DESC';
+
     if (category) {
         baseParam.push(category);
         baseQuery += `WHERE category = $1
         `;
     }
+
     baseQuery += `GROUP BY reviews.review_id
-                ORDER BY created_at DESC;`;
+                ORDER BY ${sortedBy} ${orderBy.toUpperCase()};`;
+
     return db
         .query(baseQuery, baseParam)
         .then(({ rows: reviews }) => {
@@ -96,6 +106,25 @@ exports.fetchReviewIdIfExists = id => {
                 return itemNotFound('review_id');
             } else {
                 return review_id[0];
+            }
+        });
+};
+
+exports.checkReviewSortByIsValid = sort_by => {
+    if (!sort_by) {
+        return;
+    }
+    return db
+        .query(
+            `SELECT *
+            FROM reviews
+            LIMIT 1;`
+        )
+        .then(({ rows: [review] }) => {
+            if (!Object.keys(review).includes(sort_by)) {
+                return invalidRequestParameter(sort_by);
+            } else {
+                return;
             }
         });
 };

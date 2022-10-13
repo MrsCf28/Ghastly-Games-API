@@ -82,7 +82,7 @@ describe(`GET /api`, () => {
                         });
                     });
             });
-            test('returns all reviews sorted by date in descending order', () => {
+            test('returns all reviews sorted by date in descending order by default', () => {
                 return request(app)
                     .get('/api/reviews')
                     .expect(200)
@@ -92,6 +92,61 @@ describe(`GET /api`, () => {
                             descending: true,
                         });
                     });
+            });
+            describe('orders the reviews by given key', () => {
+                test('returns reviews ordered by votes in descending order', () => {
+                    return request(app)
+                        .get('/api/reviews?sort_by=votes')
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { reviews } = body;
+                            expect(reviews).toBeSortedBy('votes', {
+                                descending: true,
+                            });
+                        });
+                });
+                test('returns reviews ordered by votes in ascending order', () => {
+                    return request(app)
+                        .get('/api/reviews?sort_by=votes&order=asc')
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { reviews } = body;
+                            expect(reviews).toBeSortedBy('votes', {
+                                ascending: true,
+                            });
+                        });
+                });
+                test('returns reviews ordered by owners in ascending order', () => {
+                    return request(app)
+                        .get('/api/reviews?sort_by=owner&order=asc')
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { reviews } = body;
+                            expect(reviews).toBeSortedBy('owner', {
+                                ascending: true,
+                            });
+                        });
+                });
+                test('ERROR returns status 400, bad request if the given key is invalid', () => {
+                    return request(app)
+                        .get('/api/reviews?sort_by=epidemic')
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe(
+                                'bad request - epidemic is an invalid request parameter'
+                            );
+                        });
+                });
+                test('ERROR returns status 400, bad request if the order query is invalid', () => {
+                    return request(app)
+                        .get('/api/reviews?sort_by=owner&order=up')
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe(
+                                'bad request - up is an invalid request parameter'
+                            );
+                        });
+                });
             });
             describe(`filters by category query`, () => {
                 test('filters by category=e.g.social deduction', () => {
