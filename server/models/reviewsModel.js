@@ -80,6 +80,9 @@ exports.updateReview = (id, newVotes) => {
 };
 
 exports.fetchReviewIdIfExists = id => {
+    if (isNaN(id)) {
+        return badRequestId('review_id');
+    }
     return db
         .query(
             `
