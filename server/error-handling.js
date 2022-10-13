@@ -13,7 +13,7 @@ exports.badRequestNeg = non_neg_value =>
 exports.badRequestQuery = query =>
     Promise.reject({
         status: 400,
-        msg: `bad request - ${query} has not been sent`,
+        msg: `bad request - ${query} needed`,
     });
 
 exports.itemNotFound = item_name =>

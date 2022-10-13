@@ -265,6 +265,78 @@ describe(`GET /api`, () => {
     });
 });
 
+describe(`POST /api`, () => {
+    describe(`/reviews/`, () => {
+        describe(`/review_id/comments`, () => {
+            test('POST a comment, status 201, returns posted comment', () => {
+                const newComment = {
+                    username: 'philippaclaire9',
+                    body: 'What werewolf?!?',
+                };
+                return request(app)
+                    .post(`/api/reviews/3/comments`)
+                    .send(newComment)
+                    .expect(201)
+                    .then(({ body }) => {
+                        const { comment } = body;
+                        expect(comment).toEqual(
+                            expect.objectContaining({
+                                comment_id: 7,
+                                body: 'What werewolf?!?',
+                                votes: 0,
+                                author: 'philippaclaire9',
+                                review_id: 3,
+                                created_at: expect.any(String),
+                            })
+                        );
+                    });
+            });
+            test('ERROR no username or body returns 400 bad request', () => {
+                const newComment = {
+                    username: 'philippaclaire9',
+                };
+                return request(app)
+                    .post(`/api/reviews/3/comments`)
+                    .send(newComment)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe(
+                            'bad request - username or body needed'
+                        );
+                    });
+            });
+            test('ERROR non-existent review id returns 404 not found', () => {
+                const newComment = {
+                    username: 'philippaclaire9',
+                    body: 'What werewolf?!?',
+                };
+                return request(app)
+                    .post(`/api/reviews/999999/comments`)
+                    .send(newComment)
+                    .expect(404)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe('review_id not found');
+                    });
+            });
+            test('ERROR invalid review id returns 400 bad request', () => {
+                const newComment = {
+                    username: 'philippaclaire9',
+                    body: 'What werewolf?!?',
+                };
+                return request(app)
+                    .post(`/api/reviews/hyperbolic/comments`)
+                    .send(newComment)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe(
+                            'bad request - review_id is not a number'
+                        );
+                    });
+            });
+        });
+    });
+});
+
 describe(`PATCH /api`, () => {
     describe(`/reviews`, () => {
         describe(`/review_id`, () => {
@@ -368,7 +440,7 @@ describe(`PATCH /api`, () => {
                     .expect(400)
                     .then(({ body }) => {
                         expect(body.msg).toBe(
-                            'bad request - inc_votes has not been sent'
+                            'bad request - inc_votes needed'
                         );
                     });
             });
