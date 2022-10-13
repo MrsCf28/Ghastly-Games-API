@@ -1,8 +1,4 @@
-const { response } = require('express');
-const {
-    badRequestId,
-    badRequestQuery,
-} = require('../error-handling');
+const { badRequestQuery } = require('../error-handling');
 const {
     fetchComments,
     addComment,

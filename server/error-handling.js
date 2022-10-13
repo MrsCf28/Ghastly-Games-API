@@ -25,5 +25,5 @@ exports.itemNotFound = item_name =>
 exports.invalidRequestParameter = param =>
     Promise.reject({
         status: 400,
-        msg:`bad request - ${param} is an invalid request parameter`
-    })
+        msg: `bad request - ${param} is an invalid request parameter`,
+    });

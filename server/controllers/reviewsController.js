@@ -22,7 +22,7 @@ exports.getReviews = (request, response, next) => {
                 promises.push(fetchCategoryIfExists(category));
             }
 
-            return Promise.all(promises);
+            return Promise.all(promises); // if I take out the return, it all breaks...
         })
         .then(reviews => {
             response.status(200).send({ reviews: reviews[0] });
