@@ -12,7 +12,7 @@ exports.getReviews = (request, response, next) => {
     const { category, sort_by, order } = request.query;
     let sortedBy = sort_by || 'created_at';
 
-    checkReviewSortByIsValid(sortedBy)
+    checkReviewSortByIsValid(sortedBy) //greenlisting
         .then(() => {
             const promises = [
                 fetchReviews(category, sortedBy, order),
@@ -22,10 +22,10 @@ exports.getReviews = (request, response, next) => {
                 promises.push(fetchCategoryIfExists(category));
             }
 
-            return Promise.all(promises); // if I take out the return, it all breaks...
+            return Promise.all(promises);
         })
-        .then(reviews => {
-            response.status(200).send({ reviews: reviews[0] });
+        .then(([reviews]) => {
+            response.status(200).send({ reviews });
         })
         .catch(err => next(err));
 };
