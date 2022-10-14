@@ -2,6 +2,7 @@ const db = require('../../db/connection');
 const {
     badRequestId,
     badRequestQuery,
+    itemNotFound,
 } = require('../error-handling');
 
 exports.fetchComments = id => {
@@ -14,6 +15,17 @@ exports.fetchComments = id => {
             WHERE review_id = $1
             ORDER BY created_at DESC`,
             [id]
+        )
+        .then(({ rows: comments }) => {
+            return comments;
+        });
+};
+
+exports.fetchAllComments = () => {
+    return db
+        .query(
+            `SELECT *
+            FROM comments`
         )
         .then(({ rows: comments }) => {
             return comments;
@@ -35,5 +47,24 @@ exports.addComment = (id, username, body) => {
         )
         .then(({ rows: comment }) => {
             return comment[0];
+        });
+};
+
+exports.removeComment = id => {
+    if (isNaN(id)) {
+        return badRequestId('comment_id');
+    }
+    return db
+        .query(
+            `DELETE FROM comments
+        WHERE comment_id = $1
+        RETURNING*`,
+            [id]
+        )
+        .then(({ rows: comment }) => {
+            if (comment.length === 0) {
+                return itemNotFound('comment_id');
+            }
+            Promise.resolve;
         });
 };

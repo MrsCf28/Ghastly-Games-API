@@ -2,6 +2,8 @@ const { badRequestQuery } = require('../error-handling');
 const {
     fetchComments,
     addComment,
+    removeComment,
+    fetchAllComments,
 } = require('../models/commentsModel');
 const { fetchReviewIdIfExists } = require('../models/reviewsModel');
 
@@ -21,6 +23,12 @@ exports.getComments = (request, response, next) => {
         .catch(err => next(err));
 };
 
+exports.getAllComments = (request, response, next) => {
+    fetchAllComments().then(comments => {
+        response.status(200).send({ comments });
+    });
+};
+
 exports.postComment = (request, response, next) => {
     const { review_id } = request.params;
     const { username, body } = request.body;
@@ -37,4 +45,14 @@ exports.postComment = (request, response, next) => {
     } else {
         return badRequestQuery('review_id');
     }
+};
+
+exports.deleteComment = (request, response, next) => {
+    const { comment_id } = request.params;
+
+    removeComment(comment_id)
+        .then(() => {
+            response.status(204).send();
+        })
+        .catch(next);
 };

@@ -15,6 +15,8 @@ const {
 const {
     getComments,
     postComment,
+    deleteComment,
+    getAllComments,
 } = require('./controllers/commentsController');
 const { getUsers } = require('./controllers/usersControllers');
 
@@ -27,10 +29,13 @@ app.get(`/api/reviews`, getReviews);
 app.get(`/api/reviews/:review_id`, getReview);
 app.get(`/api/reviews/:review_id/comments`, getComments);
 app.get(`/api/users`, getUsers);
+app.get(`/api/comments`, getAllComments);
 
 app.post(`/api/reviews/:review_id/comments`, postComment);
 
 app.patch(`/api/reviews/:review_id`, patchReview);
+
+app.delete(`/api/comments/:comment_id`, deleteComment);
 
 // error handling
 app.use(handleEndPointErrors);
