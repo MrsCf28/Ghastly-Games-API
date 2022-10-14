@@ -513,3 +513,41 @@ describe(`PATCH /api`, () => {
         });
     });
 });
+
+describe(`DELETE /api`, () => {
+    describe(`/comments/:comment_id`, () => {
+        test('returns status 204 with no content and deletes the given comment', () => {
+            return request(app)
+                .delete('/api/comments/1')
+                .expect(204)
+                .then(() => {
+                    return request(app)
+                        .get('/api/comments')
+                        .expect(200)
+                        .then(({ body }) => {
+                            const { comments } = body;
+                            expect(comments.length).toBe(5);
+                        });
+                });
+        });
+        test('ERROR invalid comment id returns status 400, bad request', () => {
+            return request(app)
+                .delete('/api/comments/bonkers')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(
+                        'bad request - comment_id is not a number'
+                    );
+                });
+        });
+        test('ERROR non-existent comment id returns status 404 not found', () => {
+            const updateVote = { inc_votes: 7 };
+            return request(app)
+                .delete('/api/comments/999999')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('comment_id not found');
+                });
+        });
+    });
+});
