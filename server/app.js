@@ -17,11 +17,13 @@ const {
     postComment,
 } = require('./controllers/commentsController');
 const { getUsers } = require('./controllers/usersControllers');
+const { getEndpoints } = require('./controllers/endpointsController');
 
 const app = express();
 app.use(express.json());
 
 // api requests
+app.get(`/api`, getEndpoints);
 app.get(`/api/categories`, getCategories);
 app.get(`/api/reviews`, getReviews);
 app.get(`/api/reviews/:review_id`, getReview);

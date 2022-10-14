@@ -10,6 +10,10 @@
                 {
                     "description": "Players attempt to uncover each other's hidden role",
                     "slug": "Social deduction"
+                },
+                {
+                    "slug": "dexterity",
+                    "description": "Games involving physical skill"
                 }
             ]
         }
@@ -20,6 +24,7 @@
         "exampleResponse": {
             "reviews": [
                 {
+                    "review_id": 1,
                     "title": "One Night Ultimate Werewolf",
                     "designer": "Akihisa Okui",
                     "owner": "happyamy2016",
@@ -27,8 +32,125 @@
                     "category": "hidden-roles",
                     "created_at": 1610964101251,
                     "votes": 5
+                },
+                {
+                    "review_id": 2,
+                    "title": "Proident tempor et.",
+                    "designer": "Seymour Buttz",
+                    "owner": "mallionaire",
+                    "review_img_url": "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+                    "review_body": "Labore occaecat sunt qui commodo anim anim aliqua adipisicing aliquip fugiat. Ad in ipsum incididunt esse amet deserunt aliqua exercitation occaecat nostrud irure labore ipsum. Culpa tempor non voluptate reprehenderit deserunt pariatur cupidatat aliqua adipisicing. Nostrud labore dolor fugiat sint consequat excepteur dolore irure eu. Anim ex adipisicing magna deserunt enim fugiat do nulla officia sint. Ex tempor ut aliquip exercitation eiusmod. Excepteur deserunt officia voluptate sunt aliqua esse deserunt velit. In id non proident veniam ipsum id in consequat duis ipsum et incididunt. Qui cupidatat ea deserunt magna proident nisi nulla eiusmod aliquip magna deserunt fugiat fugiat incididunt. Laboris nisi velit mollit ullamco deserunt eiusmod deserunt ea dolore veniam.",
+                    "category": "social deduction",
+                    "created_at": 1610010368077,
+                    "votes": 5
                 }
             ]
         }
+    },
+    "GET /api/reviews/:review_id": {
+        "description": "serves the review requested by review id",
+        "parameters": ["review_id"],
+        "queries": [],
+        "exampleResponse": {
+            "reviews": [
+                {
+                    "review_id": 2,
+                    "title": "Proident tempor et.",
+                    "designer": "Seymour Buttz",
+                    "owner": "mallionaire",
+                    "review_img_url": "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+                    "review_body": "Labore occaecat sunt qui commodo anim anim aliqua adipisicing aliquip fugiat. Ad in ipsum incididunt esse amet deserunt aliqua exercitation occaecat nostrud irure labore ipsum. Culpa tempor non voluptate reprehenderit deserunt pariatur cupidatat aliqua adipisicing. Nostrud labore dolor fugiat sint consequat excepteur dolore irure eu. Anim ex adipisicing magna deserunt enim fugiat do nulla officia sint. Ex tempor ut aliquip exercitation eiusmod. Excepteur deserunt officia voluptate sunt aliqua esse deserunt velit. In id non proident veniam ipsum id in consequat duis ipsum et incididunt. Qui cupidatat ea deserunt magna proident nisi nulla eiusmod aliquip magna deserunt fugiat fugiat incididunt. Laboris nisi velit mollit ullamco deserunt eiusmod deserunt ea dolore veniam.",
+                    "category": "social deduction",
+                    "created_at": 1610010368077,
+                    "votes": 5
+                }
+            ]
+        }
+    },
+    "GET /api/reviews/:review_id/comments": {
+        "description": "serves an array of the comments associated with the requested review by review id ordered newest first",
+        "parameters": ["review_id"],
+        "queries": [],
+        "exampleResponse": {
+            "comments": [
+                {
+                    "comment_id": 7,
+                    "body": "I didn't know dogs could play games",
+                    "votes": 10,
+                    "author": "philippaclaire9",
+                    "review_id": 3,
+                    "created_at": 1610964588110
+                },
+                {
+                    "comment_id": 3,
+                    "body": "My dog loved this game too!",
+                    "votes": 13,
+                    "author": "mallionaire",
+                    "review_id": 3,
+                    "created_at": 1610964545410
+                }
+            ]
+        }
+    },
+    "GET /api/users": {
+        "description": "serves an array of all users",
+        "queries": [],
+        "exampleResponse": {
+            "users": [
+                {
+                    "username": "mallionaire",
+                    "name": "haz",
+                    "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+                },
+                {
+                    "username": "philippaclaire9",
+                    "name": "philippa",
+                    "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+                }
+            ]
+        }
+    },
+    "POST /api/reviews/:review_id/comments": {
+        "description": "adds a comment to the review requested by review_id",
+        "parameters": ["review_id"],
+        "requiredFields": ["username", "body"],
+        "optionalFields": [],
+        "exampleRequest": {
+            "username": "philippaclaire9",
+            "body": "What werewolf?!?"
+        },
+        "exampleResponse": {
+            "comment_id": 7,
+            "body": "What werewolf?!?",
+            "votes": 0,
+            "author": "philippaclaire9",
+            "review_id": 3,
+            "created_at": 1610964545410
+        }
+    },
+    "PATCH /api/reviews/:review_id": {
+        "description": "updates the number of votes a review requested by review_id",
+        "parameters": ["review_id"],
+        "requiredFields": ["inc_votes"],
+        "optionalFields": [],
+        "exampleRequest": {
+            "inc_votes": 7
+        },
+        "exampleResponse": {
+            "review_id": 7,
+            "title": "Jenga",
+            "designer": "Leslie Scott",
+            "owner": "philippaclaire9",
+            "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            "review_body": "Fiddly fun for all the family",
+            "category": "dexterity",
+            "votes": 12,
+            "created_at": 1610964545410
+        }
+    },
+    "DELETE /api/comments/:comment_id": {
+        "description": "removes the comment requested by the comment id",
+        "parameters": ["comment_id"],
+        "response": "none"
     }
 }

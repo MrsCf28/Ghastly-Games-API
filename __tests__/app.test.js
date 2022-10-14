@@ -18,6 +18,25 @@ afterAll(() => {
 });
 
 describe(`GET /api`, () => {
+    describe(`returns endpoints documentation`, () => {
+        test('status 200, returns endpoint.json', () => {
+            return request(app)
+                .get('/api')
+                .expect(200)
+                .then(({ text }) => {
+                    const endpoints = JSON.parse(text);
+                    console.log(endpoints);
+                    expect(endpoints).toEqual(
+                        expect.objectContaining({
+                            'GET /api': {
+                                description:
+                                    'serves up a json representation of all the available endpoints of the api',
+                            },
+                        })
+                    );
+                });
+        });
+    });
     describe(`/categories`, () => {
         test('status 200, returns all categories', () => {
             return request(app)
@@ -40,14 +59,6 @@ describe(`GET /api`, () => {
         test('ERROR a misspelt endpoint is caught with a status 404', () => {
             return request(app)
                 .get('/api/categorys')
-                .expect(404)
-                .then(({ body }) => {
-                    expect(body.msg).toBe('Route not found');
-                });
-        });
-        test('ERROR a missing endpoint is caught with a status 404', () => {
-            return request(app)
-                .get('/api/')
                 .expect(404)
                 .then(({ body }) => {
                     expect(body.msg).toBe('Route not found');
