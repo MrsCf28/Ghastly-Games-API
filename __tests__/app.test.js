@@ -25,7 +25,6 @@ describe(`GET /api`, () => {
                 .expect(200)
                 .then(({ text }) => {
                     const endpoints = JSON.parse(text);
-                    console.log(endpoints);
                     expect(endpoints).toEqual(
                         expect.objectContaining({
                             'GET /api': {
