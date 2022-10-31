@@ -1,6 +1,3 @@
-const cors = require('cors');
-app.use(cors());
-
 const express = require('express');
 const {
     getCategories,
@@ -24,7 +21,9 @@ const {
 const { getUsers } = require('./controllers/usersControllers');
 const { getEndpoints } = require('./controllers/endpointsController');
 
+const cors = require('cors');
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // api requests
