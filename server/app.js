@@ -21,6 +21,9 @@ const {
 const { getUsers } = require('./controllers/usersControllers');
 const { getEndpoints } = require('./controllers/endpointsController');
 
+const cors = require('cors');
+app.use(cors());
+
 const app = express();
 app.use(express.json());
 
