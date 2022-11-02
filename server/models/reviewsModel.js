@@ -121,7 +121,7 @@ exports.checkReviewSortByIsValid = sort_by => {
             LIMIT 1;`
         )
         .then(({ rows: [review] }) => {
-            if (!Object.keys(review).includes(sort_by)) {
+            if (!Object.keys(review).includes(sort_by) && sort_by !== "comment_count") {
                 return invalidRequestParameter(sort_by);
             } else {
                 return;
