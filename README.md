@@ -26,7 +26,7 @@ The database is in PSQL, and has been interacted with by using [node-postgres](h
 
 ### 2. Install dependencies
 
-    $npm install
+    $ npm install
 
 <br />
 
