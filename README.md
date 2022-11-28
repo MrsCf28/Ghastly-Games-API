@@ -1,6 +1,6 @@
 # Ghastly Games Reviews API
 
-### To see the hosted app please visit [Ghastly Games Reviews](https://ghastly-games-reviews.herokuapp.com/api)
+### To see the hosted app please visit [Ghastly Games Reviews](https://ghastly-games-api.cyclic.app/api)
 With the simple endpoint /api you will be to view the API documentation. In Google Chrome, this would be best viewed using a JSON formatter Chrome Extension such as [this one](https://github.com/callumlocke/json-formatter).
 
 
@@ -8,7 +8,7 @@ With the simple endpoint /api you will be to view the API documentation. In Goog
 
 ## Background
 
-Ghastly Games Reviews is designed to mimic the building of a real world backend service which should then provide this information to the front end architecture. Please have a look at the above app hosted on [Heroku](https://www.heroku.com/) which can accept API requests such as GET, POST, PATCH and DELETE to the Ghastly Games databases.
+Ghastly Games Reviews is designed to mimic the building of a real world backend service which should then provide this information to the front end architecture. Please have a look at the above app hosted on [Cyclic](https://www.cyclic.sh/) which can accept API requests such as GET, POST, PATCH and DELETE to the Ghastly Games databases.
 This project has been based on the premise of building an API for the purpose of accessing application data programmatically. The intention here is to mimic the building of a real world backend service (such as reddit) which should provide this information to the front end architecture.
 
 The database is in PSQL, and has been interacted with by using [node-postgres](https://node-postgres.com/).
@@ -36,11 +36,13 @@ In the main directory, create two files
 
      .env.development
      .env.test
+     .env.production
 
 and insert the relevant, corresponding data into each, as below
 
     PGDATABASE=[your_database_name_here]            // into .env.development
     PGDATABASE=[your_test_database_name_here]       // into .env.test
+    DATABASE_URL=[your_database_url_here]           // into .env.production
 
 This will connect the databases.
 
