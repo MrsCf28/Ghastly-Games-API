@@ -1,6 +1,6 @@
 # Ghastly Games Reviews API
 
-### To see the hosted app please visit [Ghastly Games Reviews](https://ghastly-games-reviews.herokuapp.com/)
+### To see the hosted app please visit [Ghastly Games Reviews](https://ghastly-games-reviews.herokuapp.com/api)
 With the simple endpoint /api you will be to view the API documentation. In Google Chrome, this would be best viewed using a JSON formatter Chrome Extension such as [this one](https://github.com/callumlocke/json-formatter).
 
 
@@ -26,7 +26,7 @@ The database is in PSQL, and has been interacted with by using [node-postgres](h
 
 ### 2. Install dependencies
 
-    $npm install
+    $ npm install
 
 <br />
 
